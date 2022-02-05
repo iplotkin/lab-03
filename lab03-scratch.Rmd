@@ -1,7 +1,7 @@
 ---
 title: "Lab 03: Simple Linear Regression"
-author: "STAT 108"
-date: "1/26/2022"
+author: "Isaac Plotkin"
+date: "2/4/2022"
 output: html_document
 ---
 
@@ -36,13 +36,68 @@ The `elmhurst` dataset contains the following variables:
 
 ## Exploratory Data Analysis
 
-1. Plot a histogram to examine the distribution of `gift_aid`. What is the approximate shape of the distribution? Also note if there are any outliers in the dataset.
+1. 
+<!-- Plot a histogram to examine the distribution of `gift_aid`. What is the approximate shape of the distribution? Also note if there are any outliers in the dataset. -->
 
-2. To better understand the distribution of `gift_aid`, we would like calculate measures of center and spread of the distribution. Use the `summarise` function to calculate the appropriate measures of center (mean or median) and spread (standard deviation or IQR) based on the shape of the distribution from Exercise 1. Show the code and output, and state the measures of center and spread in your narrative. *Be sure to report your conclusions for this exercise and the remainder of the lab in dollars.*
+```{r}
+ggplot(data = elmhurst, aes(x = gift_aid)) + 
+  geom_histogram(binwidth = 1) + 
+  labs(title = "Gift Aid")
+```
 
-3. Plot the distribution of `family_income` and calculate the appropriate summary statistics. Describe the distribution of `family_income` (shape, center, and spread, outliers) using the plot and appropriate summary statistics.  
+Gift_aid appears to have a normal distribution. There are 2 outliers. One person has gift_aid > $35,000 and another person has gift_aid < $5,000.
 
-4. Create a scatterplot to display the relationship between `gift_aid` (response variable) and `family_income` (predictor variable). Use the scatterplot to describe the relationship between the two variables. Be sure the scatterplot includes informative axis labels and title.
+<br>2. 
+<!-- To better understand the distribution of `gift_aid`, we would like calculate measures of center and spread of the distribution. Use the `summarise` function to calculate the appropriate measures of center (mean or median) and spread (standard deviation or IQR) based on the shape of the distribution from Exercise 1. Show the code and output, and state the measures of center and spread in your narrative. *Be sure to report your conclusions for this exercise and the remainder of the lab in dollars.* -->
+```{r}
+elmhurst %>%
+  summarise(min = min(gift_aid), 
+            q1 = quantile(gift_aid, 0.25), 
+            q3 = quantile(gift_aid, 0.75), 
+            max = max(gift_aid), 
+            iqr = IQR(gift_aid), 
+            mean = mean(gift_aid),
+            median = median(gift_aid), 
+            std_dev = sd(gift_aid)
+            )
+```
+
+
+Gift_aid has a mean of ~$20,000 with a standard deviation of $5,460.
+
+<br>3. 
+<!-- Plot the distribution of `family_income` and calculate the appropriate summary statistics. Describe the distribution of `family_income` (shape, center, and spread, outliers) using the plot and appropriate summary statistics.   -->
+```{r}
+ggplot(data = elmhurst, aes(x = family_income)) + 
+  geom_histogram() + 
+  labs(title = "Family Income")
+```
+
+```{r}
+elmhurst %>%
+  summarise(min = min(family_income), 
+            q1 = quantile(family_income, 0.25), 
+            q3 = quantile(family_income, 0.75), 
+            max = max(family_income), 
+            iqr = IQR(family_income), 
+            mean = mean(family_income),
+            median = median(family_income), 
+            std_dev = sd(family_income)
+            )
+```
+
+The distribution of family_income appears to be right skewed. It is centered at ~$100,000 dollars with a standard deviation of $63,206. There is one outlier that has a family income of > $250,000. There are also several people who have a family income = 0.
+
+<br>4. 
+<!-- Create a scatterplot to display the relationship between `gift_aid` (response variable) and `family_income` (predictor variable). Use the scatterplot to describe the relationship between the two variables. Be sure the scatterplot includes informative axis labels and title. -->
+```{r}
+ggplot(data = elmhurst, aes(x = family_income, y = gift_aid)) + 
+  geom_point() + 
+  labs(title = "Gift Aid vs Family Income")
+```
+
+There appears to be a negative correlation between family income and gift aid. As family income increases, gift aid decreases.
+
 
 ## Simple Linear Regression
 

@@ -1,8 +1,10 @@
 ---
-title: "Lab 03: Simple Linear Regression"
+title: 'Lab 03: Simple Linear Regression'
 author: "Isaac Plotkin"
 date: "2/4/2022"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -39,7 +41,7 @@ The `elmhurst` dataset contains the following variables:
 1. 
 <!-- Plot a histogram to examine the distribution of `gift_aid`. What is the approximate shape of the distribution? Also note if there are any outliers in the dataset. -->
 
-```{r}
+```{r message = FALSE}
 ggplot(data = elmhurst, aes(x = gift_aid)) + 
   geom_histogram(binwidth = 1) + 
   labs(title = "Gift Aid")
@@ -47,7 +49,7 @@ ggplot(data = elmhurst, aes(x = gift_aid)) +
 
 Gift_aid appears to have a normal distribution. There are 2 outliers. One person has gift_aid > $35,000 and another person has gift_aid < $5,000.
 
-<br>2. 
+2. 
 <!-- To better understand the distribution of `gift_aid`, we would like calculate measures of center and spread of the distribution. Use the `summarise` function to calculate the appropriate measures of center (mean or median) and spread (standard deviation or IQR) based on the shape of the distribution from Exercise 1. Show the code and output, and state the measures of center and spread in your narrative. *Be sure to report your conclusions for this exercise and the remainder of the lab in dollars.* -->
 ```{r}
 elmhurst %>%
@@ -65,9 +67,9 @@ elmhurst %>%
 
 Gift_aid has a mean of ~$20,000 with a standard deviation of $5,460.
 
-<br>3. 
+3. 
 <!-- Plot the distribution of `family_income` and calculate the appropriate summary statistics. Describe the distribution of `family_income` (shape, center, and spread, outliers) using the plot and appropriate summary statistics.   -->
-```{r}
+```{r message = FALSE}
 ggplot(data = elmhurst, aes(x = family_income)) + 
   geom_histogram() + 
   labs(title = "Family Income")
@@ -88,9 +90,9 @@ elmhurst %>%
 
 The distribution of family_income appears to be right skewed. It is centered at ~$100,000 dollars with a standard deviation of $63,206. There is one outlier that has a family income of > $250,000. There are also several people who have a family income = 0.
 
-<br>4. 
+4. 
 <!-- Create a scatterplot to display the relationship between `gift_aid` (response variable) and `family_income` (predictor variable). Use the scatterplot to describe the relationship between the two variables. Be sure the scatterplot includes informative axis labels and title. -->
-```{r}
+```{r message = FALSE}
 ggplot(data = elmhurst, aes(x = family_income, y = gift_aid)) + 
   geom_point() + 
   labs(title = "Gift Aid vs Family Income")
@@ -110,7 +112,7 @@ tidy(gift_model) %>% # output model
   kable(digits = 3) # format model output
 ```
 
-6. The slope is -0.043 for this problem. That means gift_aid goes down by 0.043 when family_income is increased by 1. gift_aid = 24.319 - 0.043*family_income
+6. The slope is -0.043 for this problem. That means gift_aid goes down by $43 when family_income is increased by $1000. gift_aid = 24.319 - 0.043*family_income
 <!-- Interpret the slope in the context of the problem. -->
 
 
@@ -148,24 +150,42 @@ Yes the constant variance assumption is satisfied, The spread in the points appe
 11. 
 <!-- Next, we will assess with Normality assumption, i.e. that the distribution of the $y$ values is Normal at every value of $x$. In practice, it is impossible to check the distribution of $y$ at every possible value of $x$, so we can check whether the assumption is satisfied by looking at the overall distribution of the residuals. The assumption is satisfied if the distribution of residuals is approximately Normal, i.e. unimodal and symmetric. -->
 <!-- Make a histogram of the residuals. Based on the histogram, is the Normality assumption satisfied? Briefly explain your reasoning.  -->
-```{r warning = FALSE}
+```{r message = FALSE}
 ggplot(data = elmhurst, aes(x = resid)) +
   geom_histogram() + 
   labs(title = "Residuals")
 ```
 
-The residual histogram seems like it follows a normal distribution. Therefore, the normality Assumption is satisfied.
+The residual histogram seems like it follows a normal distribution. Therefore, the normality assumption is satisfied.
+<br>
 
-
-12. The final assumption is that the observations are independent, i.e. one observation does not affect another. We can typically make an assessment about this assumption using a description of the data. Do you think the independence assumption is satisfied? Briefly explain your reasoning. 
+12. 
+<!-- The final assumption is that the observations are independent, i.e. one observation does not affect another. We can typically make an assessment about this assumption using a description of the data. Do you think the independence assumption is satisfied? Briefly explain your reasoning.  -->
+The students were randomly selected so there is not a high chance that the observations are dependent on eachother. The independence assumption is satisfied.
 
 ## Using the Model
 
-13. Calculate $R^2$ for this model and interpret it in the context of the data.
+13. 
+<!-- Calculate $R^2$ for this model and interpret it in the context of the data. -->
+```{r}
+rsquare(gift_model, elmhurst)
+```
+
+24.86% of the variation in gift_price is explained by family_income.
+
+14. 
+<!-- Suppose a high school senior is considering Elmhurst College, and she would like to use your regression model to estimate how much gift aid she can expect to receive. Her family income is $90,000. Based on your model, about how much gift aid should she expect to receive? Show the code or calculations you use to get the prediction.  -->
+```{r}
+# as.numeric(predict(gift_model, data.frame(family_income = 90)))
+y = 24.319 - 0.043*(90)
+y
+```
+She can expect to get about $20,449 in gift aid.
+
+15. 
+<!-- Another high school senior is considering Elmhurst College, and her family income is about $310,000. Do you think it would be wise to use your model calculate the predicted gift aid for this student?  Briefly explain your reasoning.  -->
+It is probably not wise to use my model because $310,000 is an outlier compared to the data used in the model. The student can use the model but they should keep in mind that the results might not be accurate. 
 
 
-14. Suppose a high school senior is considering Elmhurst College, and she would like to use your regression model to estimate how much gift aid she can expect to receive. Her family income is $90,000. Based on your model, about how much gift aid should she expect to receive? Show the code or calculations you use to get the prediction. 
 
-15. Another high school senior is considering Elmhurst College, and her family income is about $310,000. Do you think it would be wise to use your model calculate the predicted gift aid for this student?  Briefly explain your reasoning. 
-
-*You're done and ready to submit your work! Knit, commit, and push all remaining changes. You can use the commit message "Done with Lab 2!", and make sure you have pushed all the files to GitHub (your Git pane in RStudio should be empty) and that <u>all</u> documents are updated in your repo on GitHub. Then submit the assignment on Gradescope following the instructions below.*
+My repository for this lab can be found here: https://github.com/iplotkin/lab-03
